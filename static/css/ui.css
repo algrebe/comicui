@@ -1,0 +1,104 @@
+/****************************** Comic List Start *******************************/
+.list-container {
+    display: grid;
+    grid-row-gap: 20px;
+    grid-template-areas: "search"
+                         "comics";
+    grid-template-rows: 30px 1fr;
+    grid-template-columns: 1fr;
+}
+
+.search-bar {
+    grid-area: search;
+    display: inline-grid;
+    grid-template-areas: "text btn";
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 30px;
+}
+
+.search-bar #search-bar-input {
+    grid-area: text;
+    font-size: 24px;
+}
+
+.search-bar #search-bar-btn {
+    grid-area: btn;
+}
+
+.comic-list {
+    grid-area: comics;
+    display: grid;
+    grid-column-gap: 10px;
+    grid-template-columns: repeat(auto-fill, 300px);
+}
+
+.comic-list-item {
+    display: inline-grid;
+    grid-row-gap: 10px;
+    grid-template-areas: "thumbnail"
+                         "title";
+
+    grid-template-rows: 450px 100px;
+    grid-template-columns: 1fr;
+
+    animation:fade-in 1s;
+}
+
+@keyframes fade-in {
+    from {opacity:0.2;}
+    to {opacity:1;}
+}
+
+.comic-list-item .comic-thumbnail {
+    grid-area: thumbnail;
+}
+
+.comic-list-item .comic-title {
+    grid-area: title;
+    font-size: 24px;
+}
+
+/****************************** Comic List Stop *******************************/
+
+/****************************** Chapter List Start *******************************/
+.chapter-last-read {
+    text-decoration: underline;
+}
+
+/****************************** Chapter List Stop *******************************/
+
+/****************************** Chapter Start *******************************/
+.chapter-container {
+    display: grid;
+    grid-template-areas: "header"
+                         "viewer"
+                         "footer";
+    grid-row-gap: 20px;
+    grid-template-rows: 30px 1fr 100px;
+}
+
+.chapter-container .header {
+    grid-area: header;
+    font-size: 24px;
+}
+
+.chapter-container .viewer {
+    grid-area: viewer;
+    object-fit: contain;
+}
+
+.chapter-container .viewer img {
+    width: 100%;
+}
+
+#next-chapter {
+    grid-area: footer;
+    font-size: 50px;
+    justify-self: center;
+    align-self: center;
+    margin-bottom: 50px;
+    border-color: black;
+}
+
+/****************************** Chapter Stop *******************************/
+
