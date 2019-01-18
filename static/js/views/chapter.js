@@ -2,6 +2,9 @@ var ChapterView = function() {
     var currentComic = null;
     var currentChapter = null;
     var imageLinks = null;
+    var imageSrcs = null;
+    var runHolder = false;
+    var numLoaded = 0;
 
     function initChapter() {
         var comicid = m.route.param("comicid");
@@ -26,10 +29,29 @@ var ChapterView = function() {
 
         m.request({
             method: "GET",
-            url: getChapterMetaURL(currentComic.id, currentChapter),
+            url: Utils.getChapterMetaURL(currentComic.id, currentChapter),
         }).then((result) => {
             imageLinks = result.image_links;
-            console.log("got image links - ", imageLinks);
+            imageSrcs = [];
+            var width = parseInt(0.95 * window.innerWidth);
+            var height = parseInt(0.95 * window.innerHeight);
+            var prefix = "holder.js/" + width + "x" + height + "?theme=vine&text=placeholder-for-img-";
+            for (var i=0; i < imageLinks.length; i++) {
+                imageSrcs[i] = prefix + i;
+            }
+
+            m.redraw();
+
+            for (var i=0; i < imageLinks.length; i++) {
+                imageLinks[i] = Utils.getImageSrc(currentComic.id, currentChapter, imageLinks[i]);
+                loadImage(i);
+            }
+        });
+    }
+
+    function loadImage(i) {
+        Utils.loadImage(imageLinks[i], (result) => {
+            imageSrcs[i] = result;
             m.redraw();
         });
     }
@@ -45,7 +67,6 @@ var ChapterView = function() {
     }
 
     function gotoNextChapter(e) {
-        console.log("on click clicked");
         e.redraw = false;
         var nextChapter = currentChapter + 1;
         m.request({
@@ -67,12 +88,37 @@ var ChapterView = function() {
     var ViewerComponent = {
         view: function() {
             var images = [];
-            if (imageLinks != null) {
-                for (var i=0; i < imageLinks.length; i++) {
-                    images.push(m("img", {src: getImageSrc(currentComic.id, currentChapter, imageLinks[i])}));
+            if (imageSrcs != null) {
+                var holderCount = 0;
+                for (var i=0; i < imageSrcs.length; i++) {
+                    var src = imageSrcs[i];
+                    var key = currentComic.id + "-" + currentChapter + "-img-" + i;
+                    if (src.startsWith("holder.js")) {
+                        key = "holder-" + key;
+                        holderCount += 1;
+                    }
+
+                    images.push(m("img", {src: src, key: key}));
+                }
+
+                if (holderCount == 0) {
+                    runHolder = false;
+                } else {
+                    runHolder = true;
                 }
             }
             return m(".viewer", images);
+        },
+
+        oncreate: function() {
+            if (runHolder) {
+                Holder.run();
+            }
+        },
+        onupdate: function() {
+            if (runHolder) {
+                Holder.run();
+            }
         }
     }
 
@@ -97,7 +143,7 @@ var ChapterView = function() {
                 }
 
                 return m(".chapter-container", [
-                    m(".header", currentComic.name + " : Chapter " + padChapterNum(currentChapter)),
+                    m(".header", currentComic.name + " : Chapter " + Utils.padChapterNum(currentChapter)),
                     m(ViewerComponent),
                     m("button", {id: "next-chapter", onclick: onclick}, btnText)
                 ]);

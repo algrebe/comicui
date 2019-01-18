@@ -29,8 +29,9 @@ func APIError(w http.ResponseWriter, e error) {
 }
 
 type APIServer struct {
-	ComicDir string
-	db       *DB
+	ComicDir            string
+	DecodeImageAtServer bool
+	db                  *DB
 }
 
 func (s *APIServer) Init() error {
@@ -44,6 +45,12 @@ func (s *APIServer) Init() error {
 	}
 
 	return nil
+}
+
+func (s *APIServer) options(w http.ResponseWriter, req *http.Request) {
+	result := make(map[string]interface{})
+	result["decode_image_at_server"] = s.DecodeImageAtServer
+	APIResponse(w, result)
 }
 
 func (s *APIServer) list(w http.ResponseWriter, req *http.Request) {
@@ -85,6 +92,7 @@ func (s *APIServer) updateProgress(w http.ResponseWriter, req *http.Request) {
 
 func (s *APIServer) getHandlers() map[string]func(http.ResponseWriter, *http.Request) {
 	return map[string]func(http.ResponseWriter, *http.Request){
+		"options":         s.options,
 		"list":            s.list,
 		"update_progress": s.updateProgress,
 	}

@@ -3,7 +3,7 @@ var ChapterListView = function() {
     var currentComic = null;
 
     function getID(chapterNum) {
-        return "comic-" + currentComic.id + "-chapter-" + padChapterNum(chapterNum);
+        return "comic-" + currentComic.id + "-chapter-" + Utils.padChapterNum(chapterNum);
     }
 
     function BuildChapterComponent(chapterNum) {
@@ -17,7 +17,7 @@ var ChapterListView = function() {
             view: function() {
                 return m(".chapter-list-item", 
                     {id: getID(chapterNum), onclick: onChapterClicked}, 
-                    [m(".chapter-title", "Chapter " + padChapterNum(chapterNum))]
+                    [m(".chapter-title", "Chapter " + Utils.padChapterNum(chapterNum))]
                 )
             }
         }

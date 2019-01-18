@@ -15,6 +15,7 @@ import (
 var Port int
 var ComicDir string
 var StaticDir string
+var DecodeImageAtServer bool
 
 func bindArgs() {
 	var defaultComicDir string
@@ -27,6 +28,7 @@ func bindArgs() {
 	flag.IntVar(&Port, "port", 8888, "port to listen on")
 	flag.StringVar(&ComicDir, "comic-dir", defaultComicDir, "directory to all comics")
 	flag.StringVar(&StaticDir, "static-dir", "", "if specified, serves /static and /comicfs")
+	flag.BoolVar(&DecodeImageAtServer, "decode-img-at-server", false, "if specified, images are decoded on the server")
 }
 
 //https://play.golang.org/p/EQezfIvN-F
@@ -39,7 +41,7 @@ func main() {
 	bindArgs()
 	flag.Parse()
 
-	apiServer := APIServer{ComicDir: ComicDir}
+	apiServer := APIServer{ComicDir: ComicDir, DecodeImageAtServer: DecodeImageAtServer}
 	if err := apiServer.Init(); err != nil {
 		log.Error("Failed to initialize server", "error", err)
 		panic(err)
